@@ -4,11 +4,13 @@ import * as z from "zod";
 import { MessageSquare } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { Heading } from "@/components/heading";
+import { useState } from "react";
 import { Form, FormField, FormItem, FormControl } from "@/components/ui/form";
 import { formSchema } from "./constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+
 const ConversationPage = () => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -32,7 +34,7 @@ const ConversationPage = () => {
         <Heading 
         title = "Conversation"
         description="Our most advanced conversation model."
-        icon={MessageSquare}
+        Icon={MessageSquare}
         iconColor="text-violet-500"
         bgColor="bg-violet-500/10"
         />
