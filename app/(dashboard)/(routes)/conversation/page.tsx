@@ -12,7 +12,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import type { ChatCompletionRequestMessage } from "openai";
+
+type ChatCompletionRequestMessage = {
+  role: 'system' | 'user' | 'assistant';
+  content: string;
+};
 
 const ConversationPage = () => {
     const router = useRouter();

@@ -10,14 +10,14 @@ export async function POST(
     req: Request
 ) {
     try {
-    const { userId } = auth();
+    const { userId } = await auth();
     const body = await req.json();
     const { messages } = body;
 
     if (!userId) {
         return new NextResponse("Unauthorized", { status: 401 });
     }
-    if (!configuration.apiKey) {
+    if (!process.env.OPENAI_API_KEY) {
         return new NextResponse("OpenAI API key not configured", { status: 500 });
     }
     
