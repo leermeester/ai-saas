@@ -7,16 +7,15 @@ import { useForm } from "react-hook-form";
 import { Heading } from "@/components/heading";
 import { useState } from "react";
 import { Form, FormField, FormItem, FormControl } from "@/components/ui/form";
-import { formSchema } from "./constants";
+import { amountOptions, formSchema } from "./constants";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import Empty from "@/components/empty";
-import Loader from "@/components/loader";   
+import Loader from "@/components/loader";  
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { cn } from "@/lib/utils"
-import UserAvatar from "@/components/user-avatar";
-import { BotAvatar } from "@/components/bot-avatar";
 
 
 const ImagePage = () => {
@@ -41,6 +40,8 @@ const ImagePage = () => {
         const response = await axios.post("/api/image", values);
 
         const urls = response.data.map((image: { url: string }) => image.url);
+
+        setImages(urls);
 
         form.reset();
         } catch (error: any) {
@@ -90,13 +91,44 @@ const ImagePage = () => {
                                 <Input
                                 className="border-0 outline-none focus-visible:ring-0 focus-visible:ring-transparent"
                                 disabled={isLoading}
-                                placeholder="Ask anything..."
+                                placeholder="A picture of a horse in the Swiss alps"
                                 {...field}
                                 />
                             </FormControl>
                             </FormItem>
                         )}
                         />
+                        <FormField>
+                            control={form.control}
+                            name="amount"
+                            render={({ field }) => (
+                                <FormItem className="col-span-12 lg:col-span-2">
+                                    <Select>
+                                        disabled={isLoading}
+                                        onValueChange={field.onChange}
+                                        value={field.value}
+                                        defaultValue={field.value}
+                                    >
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            {amountOptions.map((option) => (
+                                                <SelectItem 
+                                                key={option.value} 
+                                                value={option.value}
+                                                >
+                                                    {option.label}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </FormItem> 
+                            )}
+
+                        </FormField>
                         <Button
                         type="submit"
                         className="col-span-12 lg:col-span-2 w-full"
