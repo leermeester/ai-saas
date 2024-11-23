@@ -7,7 +7,7 @@ import {
   SignedIn,
   SignedOut,
 } from '@clerk/nextjs'
-
+import { ModalProvider } from '@/components/ui/modal-provider'
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -40,6 +40,7 @@ export default function RootLayout({
           <SignedIn>
             {/* <UserButton /> */}
           </SignedIn>
+          <ModalProvider />
           {children}
         </body>
       </html>

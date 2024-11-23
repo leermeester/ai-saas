@@ -15,13 +15,6 @@ const tools = [
     bgColor: "bg-violet-500/10"
   },
   {
-    label: "Music Generation",
-    icon: Music,
-    href: "/music",
-    color: "text-emerald-500",
-    bgColor: "bg-emerald-500/10"
-  },
-  {
     label: "Image Generation",
     icon: Image,
     href: "/image",
@@ -36,12 +29,20 @@ const tools = [
     bgColor: "bg-orange-500/10"
   },
   {
+    label: "Music Generation",
+    icon: Music,
+    href: "/music",
+    color: "text-emerald-500",
+    bgColor: "bg-emerald-500/10"
+  },
+  {
     label: "Code Generation",
     icon: Code,
     href: "/code", 
     color: "text-green-500",
     bgColor: "bg-green-500/10"
-  }
+  },
+
 ]
 
 const DashboardPage = () => {

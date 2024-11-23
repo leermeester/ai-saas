@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils"
 import UserAvatar from "@/components/user-avatar";
 import { BotAvatar } from "@/components/bot-avatar";
 import ReactMarkdown from "react-markdown";
+import { useProModal } from "@/hooks/use-pro-modal";
 
 type ChatCompletionRequestMessage = {
   role: 'system' | 'user' | 'assistant';
@@ -25,6 +26,7 @@ type ChatCompletionRequestMessage = {
 };
 
 const CodePage = () => {
+    const proModal = useProModal();
     const router = useRouter();
     const [messages, setMessages] = useState<ChatCompletionRequestMessage[]>([]);
     const form = useForm<z.infer<typeof formSchema>>({
@@ -49,12 +51,18 @@ const CodePage = () => {
             messages: newMessages,
         });
 
-        setMessages((current) => [...current, userMessage, response.data]);
 
+        setMessages((current) => [...current, userMessage, response.data]);
+        if (response.status === 403) {
+            proModal.onOpen();
+        }
+        
+        form.reset(); 
 
         } catch (error: any) {
-            // TODO: Open Pro Model
-        console.log(values);
+            if (error?.response?.status === 403) {
+                proModal.onOpen();
+            }
         } finally {
             router.refresh();
         }
@@ -161,7 +169,5 @@ const CodePage = () => {
         </div>
     </div>
 </div>
-  );
-}
-
+)};
 export default CodePage;
