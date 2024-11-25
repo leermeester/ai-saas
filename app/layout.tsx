@@ -33,6 +33,9 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning>
+        <head>
+          <link rel="icon" href="/favicon.ico" />
+        </head>
         <body suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable}`}>
           <SignedOut>
             <SignInButton />
