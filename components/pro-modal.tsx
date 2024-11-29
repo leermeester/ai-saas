@@ -53,7 +53,7 @@ const tools = [
 
 export const ProModal = () => {
     const proModal = useProModal();
-    const [isLoading, setIsLoading] = useState(false);
+    const [loading, setIsLoading] = useState(false);
 
     const onSubscribe = async () => {
         try {
