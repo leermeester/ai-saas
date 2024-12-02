@@ -11,7 +11,7 @@ const SettingsPage = async () => {
             <Heading
                 title="Settings"
                 description="Manage your account settings and preferences."
-                icon={Settings}
+                Icon={Settings}
                 iconColor="text-gray-700"
                 bgColor="bg-gray-700/10"
             />

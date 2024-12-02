@@ -5,6 +5,7 @@ import { Card, CardContent } from "./ui/card";
 import { useState, useEffect } from "react";
 interface FreeCounterProps {
     apiLimitCount: number;
+    isPro: boolean;
 }
 
 import { Progress } from "./ui/progress";
@@ -14,7 +15,8 @@ import { useProModal } from "@/hooks/use-pro-modal";
 
 
 export const FreeCounter = ({
-    apiLimitCount = 0
+    apiLimitCount = 0,
+    isPro = false,
 }: FreeCounterProps) => {
     const proModal = useProModal();
     const [mounted, setMounted] = useState(false);
@@ -24,6 +26,10 @@ export const FreeCounter = ({
     }, []);
 
     if (!mounted) {
+        return null;
+    }
+
+    if (isPro) {
         return null;
     }
 
