@@ -1,6 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { supabase } from "@/lib/supabaseClient";
 import { MAX_FREE_COUNTS } from "@/constants";
+import prismadb from "./prismadb";
 
 /**
  * Increases the API limit count for the authenticated user.
@@ -58,18 +59,17 @@ export const checkApiLimit = async (): Promise<boolean> => {
         return false;
     }
 
-    const { data: userApiLimit, error } = await supabase
-        .from('UserApiLimit')
-        .select('count')
-        .eq('userId', userId)
-        .single();
+    const userApiLimit = await prismadb.userApiLimit.findUnique({
+        where: {
+            userId
+        }
+    });
 
-    if (error && error.code !== 'PGRST116') { // 'PGRST116' indicates no rows found
-        console.error('Error fetching API limit:', error.message);
+    if (!userApiLimit || userApiLimit.count < MAX_FREE_COUNTS) {
+        return true;
+    } else {
         return false;
     }
-
-    return !userApiLimit || userApiLimit.count < MAX_FREE_COUNTS;
 };
 
 /**
@@ -77,22 +77,42 @@ export const checkApiLimit = async (): Promise<boolean> => {
  * @returns {Promise<number>} - The current API count.
  */
 export const getApiLimitCount = async (): Promise<number> => {
-    const { userId } = await auth();
+    try {
+        const { userId } = await auth();
 
-    if (!userId) {
+        if (!userId) {
+            return 0;
+        }
+
+        const { data: userApiLimit, error } = await supabase
+            .from('UserApiLimit')
+            .select('count')
+            .eq('userId', userId)
+            .single();
+
+        if (error && error.code === 'PGRST116') {
+            // User doesn't exist yet, create a new entry
+            const { error: insertError } = await supabase
+                .from('UserApiLimit')
+                .insert({
+                    userId,
+                    count: 0
+                });
+
+            if (insertError) {
+                console.error('Error creating new user API limit:', insertError.message);
+            }
+            return 0;
+        }
+
+        if (error) {
+            console.error('Error fetching API limit count:', error.message);
+            return 0;
+        }
+
+        return userApiLimit?.count ?? 0;
+    } catch (error) {
+        console.error('Error in getApiLimitCount:', error);
         return 0;
     }
-
-    const { data: userApiLimit, error } = await supabase
-        .from('UserApiLimit')
-        .select('count')
-        .eq('userId', userId)
-        .single();
-
-    if (error) {
-        console.error('Error fetching API limit count:', error.message);
-        return 0;
-    }
-
-    return userApiLimit?.count ?? 0;
 };
