@@ -9,6 +9,7 @@ import {
 } from '@clerk/nextjs'
 import { ModalProvider } from '@/components/ui/modal-provider'
 import { ToasterProvider } from "@/components/toaster-provider";
+import { CrispProvider } from "@/components/crisp-provider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -37,6 +38,7 @@ export default function RootLayout({
         <head>
           <link rel="icon" href="/favicon.ico" />
         </head>
+        <CrispProvider />
         <body suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable}`}>
           <SignedOut>
             <SignInButton />
@@ -46,6 +48,7 @@ export default function RootLayout({
           </SignedIn>
           <ModalProvider />
           <ToasterProvider />
+          
           {children}
         </body>
       </html>
