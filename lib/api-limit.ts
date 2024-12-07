@@ -1,5 +1,4 @@
 import { auth } from "@clerk/nextjs/server";
-import { supabase } from "@/lib/supabaseClient";
 import { MAX_FREE_COUNTS } from "@/constants";
 import prismadb from "./prismadb";
 
@@ -13,38 +12,21 @@ export const increaseApiLimit = async () => {
         return;
     }
 
-    // Fetch existing API limit
-    const { data: existingLimit, error: selectError } = await supabase
-        .from('UserApiLimit')
-        .select('count')
-        .eq('userId', userId)
-        .single();
+    const userApiLimit = await prismadb.userApiLimit.findUnique({
+        where: { userId },
+    });
 
-    if (selectError && selectError.code !== 'PGRST116') { // 'PGRST116' indicates no rows found
-        console.error('Error fetching API limit:', selectError.message);
-        return;
-    }
-
-    if (existingLimit) {
+    if (userApiLimit) {
         // Update existing record
-        const { error: updateError } = await supabase
-            .from('UserApiLimit')
-            .update({ count: existingLimit.count + 1 })
-            .eq('userId', userId);
-
-        if (updateError) {
-            console.error('Error updating API limit:', updateError.message);
-        }
+        await prismadb.userApiLimit.update({
+            where: { userId },
+            data: { count: userApiLimit.count + 1 },
+        });
     } else {
         // Create new record
-        const { error: insertError } = await supabase.from('UserApiLimit').insert({
-            userId,
-            count: 1,
+        await prismadb.userApiLimit.create({
+            data: { userId, count: 1 },
         });
-
-        if (insertError) {
-            console.error('Error inserting API limit:', insertError.message);
-        }
     }
 };
 
@@ -84,33 +66,23 @@ export const getApiLimitCount = async (): Promise<number> => {
             return 0;
         }
 
-        const { data: userApiLimit, error } = await supabase
-            .from('UserApiLimit')
-            .select('count')
-            .eq('userId', userId)
-            .single();
+        const userApiLimit = await prismadb.userApiLimit.findUnique({
+            where: { userId },
+            select: { count: true },
+        });
 
-        if (error && error.code === 'PGRST116') {
+        if (!userApiLimit) {
             // User doesn't exist yet, create a new entry
-            const { error: insertError } = await supabase
-                .from('UserApiLimit')
-                .insert({
+            await prismadb.userApiLimit.create({
+                data: {
                     userId,
-                    count: 0
-                });
-
-            if (insertError) {
-                console.error('Error creating new user API limit:', insertError.message);
-            }
+                    count: 0,
+                },
+            });
             return 0;
         }
 
-        if (error) {
-            console.error('Error fetching API limit count:', error.message);
-            return 0;
-        }
-
-        return userApiLimit?.count ?? 0;
+        return userApiLimit.count;
     } catch (error) {
         console.error('Error in getApiLimitCount:', error);
         return 0;
