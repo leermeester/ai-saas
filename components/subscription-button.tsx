@@ -6,6 +6,7 @@ import { Zap } from "lucide-react";
 import axios from "axios";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
+
 interface SubscriptionButtonProps {
     isPro: boolean;
 }
@@ -13,7 +14,6 @@ interface SubscriptionButtonProps {
 export const SubscriptionButton =({
     isPro = false
 }: SubscriptionButtonProps) => {
-
     const [loading, setLoading] = useState(false);
 
     const onClick = async () => {
@@ -31,7 +31,7 @@ export const SubscriptionButton =({
 
 
     return (
-        <Button disabled={loading} variant={isPro ? "default" : "premium"} size="sm">
+        <Button disabled={loading} variant={isPro ? "default" : "premium"} onClick={onClick}>
             {isPro ? "Manage Subscription" : "Upgrade to Pro"}
             {!isPro && <Zap className="w-4 h-4 ml-2 fill-white" />}
         </Button>

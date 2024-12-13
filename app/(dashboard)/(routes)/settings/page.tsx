@@ -25,3 +25,5 @@ const SettingsPage = async () => {
         </div>
     )
 }
+
+export default SettingsPage;
